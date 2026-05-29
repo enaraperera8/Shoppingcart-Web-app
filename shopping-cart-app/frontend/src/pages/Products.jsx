@@ -146,7 +146,8 @@ const starterProducts = [
     category_id: 2,
     category_name: "Fruits",
     name: "Golden Pineapple",
-    description: "Fragrant pineapple with juicy golden slices and natural sweetness.",
+    description:
+      "Fragrant pineapple with juicy golden slices and natural sweetness.",
     price: 85,
     stock_quantity: 140,
     unit_grams: 100,
@@ -223,7 +224,8 @@ const starterProducts = [
     category_id: 3,
     category_name: "Meat & Seafood",
     name: "Pork Curry Cuts",
-    description: "Fresh pork pieces trimmed and prepared for rich curry dishes.",
+    description:
+      "Fresh pork pieces trimmed and prepared for rich curry dishes.",
     price: 380,
     stock_quantity: 100,
     unit_grams: 100,
@@ -234,7 +236,8 @@ const starterProducts = [
     category_id: 3,
     category_name: "Meat & Seafood",
     name: "Chicken Sausages",
-    description: "Savory chicken sausages for quick grills and breakfast plates.",
+    description:
+      "Savory chicken sausages for quick grills and breakfast plates.",
     price: 260,
     stock_quantity: 110,
     unit_grams: 100,
@@ -256,7 +259,8 @@ const starterProducts = [
     category_id: 3,
     category_name: "Meat & Seafood",
     name: "Seer Fish Slices",
-    description: "Fresh seer fish slices selected for fragrant Sri Lankan curry.",
+    description:
+      "Fresh seer fish slices selected for fragrant Sri Lankan curry.",
     price: 390,
     stock_quantity: 100,
     unit_grams: 100,
@@ -345,7 +349,8 @@ const starterProducts = [
     category_name: "Bakery Items",
     subcategory: "Cakes",
     name: "Red Velvet Cake",
-    description: "Velvety cocoa sponge finished with smooth cream cheese frosting.",
+    description:
+      "Velvety cocoa sponge finished with smooth cream cheese frosting.",
     price: 5600,
     stock_quantity: 8,
     image_url: "/images/bakery/red-velvet-cake.jpg",
@@ -532,7 +537,8 @@ const starterProducts = [
     category_name: "Dairy Items",
     subcategory: "Dairy Products",
     name: "Salted Butter",
-    description: "Creamy salted butter for toast, baking, and everyday cooking.",
+    description:
+      "Creamy salted butter for toast, baking, and everyday cooking.",
     price: 740,
     stock_quantity: 20,
     image_url: "/images/dairy/butter.jpg",
@@ -565,7 +571,8 @@ const starterProducts = [
     category_name: "Dairy Items",
     subcategory: "Dairy Products",
     name: "Full Cream Milk Powder",
-    description: "Full cream milk powder for tea, coffee, and family breakfasts.",
+    description:
+      "Full cream milk powder for tea, coffee, and family breakfasts.",
     price: 1320,
     stock_quantity: 30,
     image_url: "/images/dairy/milk-powder.jpg",
@@ -576,7 +583,8 @@ const starterProducts = [
     category_name: "Dairy Items",
     subcategory: "Ice Cream",
     name: "Highland Vanilla Ice Cream",
-    description: "Smooth Highland vanilla ice cream with a classic creamy taste.",
+    description:
+      "Smooth Highland vanilla ice cream with a classic creamy taste.",
     price: 980,
     stock_quantity: 24,
     image_url: "/images/dairy/highland-vanilla-ice-cream.jpeg",
@@ -741,7 +749,8 @@ const starterProducts = [
     category_name: "Sweets & Beverages",
     subcategory: "Biscuits",
     name: "Nice",
-    description: "Sugar-topped coconut-style biscuits for a simple sweet snack.",
+    description:
+      "Sugar-topped coconut-style biscuits for a simple sweet snack.",
     price: 240,
     stock_quantity: 52,
     image_url: "/images/biscuits/nice.jpg",
@@ -942,7 +951,10 @@ const departmentNames = [
   "Dairy Items",
   "Sweets & Beverages",
 ];
-const starterCategories = departmentNames.map((name, index) => ({ id: index + 1, name }));
+const starterCategories = departmentNames.map((name, index) => ({
+  id: index + 1,
+  name,
+}));
 const bakerySubcategories = ["Cakes", "Bread", "Pastries", "Buns"];
 const dairySubcategories = ["Dairy Products", "Ice Cream"];
 const sweetsBeveragesSubcategories = ["Biscuits", "Sweets", "Beverages"];
@@ -979,8 +991,10 @@ function sortDepartments(categoryList) {
   return [...categoryList].sort((first, second) => {
     const firstPosition = departmentNames.indexOf(first.name);
     const secondPosition = departmentNames.indexOf(second.name);
-    const firstOrder = firstPosition === -1 ? departmentNames.length : firstPosition;
-    const secondOrder = secondPosition === -1 ? departmentNames.length : secondPosition;
+    const firstOrder =
+      firstPosition === -1 ? departmentNames.length : firstPosition;
+    const secondOrder =
+      secondPosition === -1 ? departmentNames.length : secondPosition;
     return firstOrder - secondOrder || first.name.localeCompare(second.name);
   });
 }
@@ -989,7 +1003,9 @@ export default function Products() {
   const { syncError } = useCart();
   const [products, setProducts] = useState(starterProducts);
   const [categories, setCategories] = useState(starterCategories);
-  const [activeCategory, setActiveCategory] = useState(String(starterCategories[0]?.id || ""));
+  const [activeCategory, setActiveCategory] = useState(
+    String(starterCategories[0]?.id || ""),
+  );
   const [activeSubcategory, setActiveSubcategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [notice, setNotice] = useState("");
@@ -1000,13 +1016,21 @@ export default function Products() {
         const sortedCategories = sortDepartments(availableCategories);
         setProducts(catalog);
         setCategories(sortedCategories);
-        setActiveCategory((currentCategory) => currentCategory || String(sortedCategories[0]?.id || ""));
+        setActiveCategory(
+          (currentCategory) =>
+            currentCategory || String(sortedCategories[0]?.id || ""),
+        );
       })
-      .catch(() => setNotice("Showing sample products while the store service is offline."));
+      .catch(() =>
+        setNotice(
+          "Showing sample products while the store service is offline.",
+        ),
+      );
   }, []);
 
   const visibleProducts = products.filter((product) => {
-    const matchesCategory = !activeCategory || String(product.category_id) === activeCategory;
+    const matchesCategory =
+      !activeCategory || String(product.category_id) === activeCategory;
     const matchesSubcategory =
       !activeSubcategory || product.subcategory === activeSubcategory;
     const query = searchTerm.toLowerCase().trim();
@@ -1032,7 +1056,10 @@ export default function Products() {
     <section className="catalog-page">
       <header className="section-header">
         <h1>The daily market</h1>
-        <p>Choose from fresh produce, seafood, bakery, dairy, sweets, and beverages.</p>
+        <p>
+          Choose from fresh produce, seafood, bakery, dairy, sweets, and
+          beverages.
+        </p>
       </header>
       {notice && <p className="notice">{notice}</p>}
       {syncError && <p className="stock-alert">{syncError}</p>}
@@ -1061,7 +1088,10 @@ export default function Products() {
           ))}
         </div>
         {subcategoryOptions && (
-          <div className="subcategory-filters" aria-label={subcategoryOptions.ariaLabel}>
+          <div
+            className="subcategory-filters"
+            aria-label={subcategoryOptions.ariaLabel}
+          >
             <span>{subcategoryOptions.label}</span>
             <button
               className={!activeSubcategory ? "active" : ""}
@@ -1090,14 +1120,21 @@ export default function Products() {
       </div>
       {!visibleProducts.length && (
         <div className="empty-state discount-empty-state">
-          <p>Try one of today&apos;s discount picks while we restock the shelf.</p>
+          <p>
+            Try one of today&apos;s discount picks while we restock the shelf.
+          </p>
           <div className="discount-grid">
             {discountProducts.length ? (
               discountProducts.map((product) => {
                 return (
                   <article className="discount-card" key={product.id}>
-                    <span className="discount-badge">{discountPercent(product)}% off</span>
-                    <img alt={product.name} src={productImageSrc(product.image_url)} />
+                    <span className="discount-badge">
+                      {discountPercent(product)}% off
+                    </span>
+                    <img
+                      alt={product.name}
+                      src={productImageSrc(product.image_url)}
+                    />
                     <div>
                       <small>{product.category_name}</small>
                       <h3>{product.name}</h3>
@@ -1105,7 +1142,10 @@ export default function Products() {
                         <strong>{formatLkr(salePrice(product))}</strong>
                         <span>{formatLkr(product.price)}</span>
                       </p>
-                      <button onClick={() => showDiscountProduct(product)} type="button">
+                      <button
+                        onClick={() => showDiscountProduct(product)}
+                        type="button"
+                      >
                         View deal
                       </button>
                     </div>
@@ -1114,12 +1154,17 @@ export default function Products() {
               })
             ) : (
               <p className="discount-empty-note">
-                Add a discount percentage in the admin product form to show offers here.
+                Add a discount percentage in the admin product form to show
+                offers here.
               </p>
             )}
           </div>
           {searchTerm && (
-            <button className="button secondary" onClick={() => setSearchTerm("")} type="button">
+            <button
+              className="button secondary"
+              onClick={() => setSearchTerm("")}
+              type="button"
+            >
               Clear search
             </button>
           )}
