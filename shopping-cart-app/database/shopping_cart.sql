@@ -1,0 +1,65 @@
+CREATE DATABASE IF NOT EXISTS shopping_cart;
+USE shopping_cart;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NULL,
+  auth_provider VARCHAR(30) NOT NULL DEFAULT 'password',
+  provider_id VARCHAR(255) NULL,
+  role ENUM('customer', 'admin') NOT NULL DEFAULT 'customer',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY users_provider_unique (auth_provider, provider_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_passkeys (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  credential_id VARCHAR(512) NOT NULL UNIQUE,
+  public_key TEXT NOT NULL,
+  counter BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  device_name VARCHAR(120) NULL,
+  transports VARCHAR(500) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT passkeys_user_fk
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  category_id INT UNSIGNED NULL,
+  name VARCHAR(180) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  discount_percent DECIMAL(5, 2) NOT NULL DEFAULT 0,
+  stock_quantity INT UNSIGNED NOT NULL DEFAULT 0,
+  unit_grams INT UNSIGNED NULL,
+  subcategory VARCHAR(100) NULL,
+  image_url VARCHAR(500) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT products_category_fk
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+    ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+  user_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NOT NULL,
+  quantity INT UNSIGNED NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, product_id),
+  CONSTRAINT cart_user_fk
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+  CONSTRAINT cart_product_fk
+    FOREIGN KEY (product_id) REFERENCES products(id)
+    ON DELETE CASCADE
+);
