@@ -8,6 +8,9 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
 function providerError(error, fallback) {
+  if (error.code === "ERR_NETWORK") {
+    return "Cannot reach the server. Make sure the backend is running on http://localhost:5000.";
+  }
   return error.response?.data?.message || error.message || fallback;
 }
 
@@ -93,7 +96,11 @@ function requestFacebookAccessToken() {
     authUrl.searchParams.set("response_type", "token");
     authUrl.searchParams.set("scope", "email,public_profile");
 
-    const popup = window.open(authUrl.toString(), "freshmart-facebook-login", "width=520,height=680");
+    const popup = window.open(
+      authUrl.toString(),
+      "freshmart-facebook-login",
+      "width=520,height=680",
+    );
     if (!popup) {
       reject(new Error("Allow popups to continue with Facebook."));
       return;
@@ -106,7 +113,10 @@ function requestFacebookAccessToken() {
     }, 120000);
 
     function handleMessage(event) {
-      if (event.origin !== window.location.origin || event.data?.type !== "facebook-auth") {
+      if (
+        event.origin !== window.location.origin ||
+        event.data?.type !== "facebook-auth"
+      ) {
         return;
       }
       window.clearTimeout(timeout);
@@ -127,14 +137,17 @@ export default function Login({ adminMode = false }) {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [providerLoading, setProviderLoading] = useState("");
-  const { facebookLogin, googleLogin, login, adminLogin, passkeyLogin } = useAuth();
+  const { facebookLogin, googleLogin, login, adminLogin, passkeyLogin } =
+    useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     try {
-      const user = await (adminMode ? adminLogin(credentials) : login(credentials));
+      const user = await (adminMode
+        ? adminLogin(credentials)
+        : login(credentials));
       navigate(user.role === "admin" ? "/admin" : "/products");
     } catch (requestError) {
       setError(providerError(requestError, "Login failed. Please try again."));
@@ -162,12 +175,16 @@ export default function Login({ adminMode = false }) {
   };
 
   const handleProviderSetupNeeded = (provider) => {
-    setError(`${provider} sign-in is not connected yet. Please use another sign-in option for now.`);
+    setError(
+      `${provider} sign-in is not connected yet. Please use another sign-in option for now.`,
+    );
   };
 
   const handlePasskeyLogin = () => {
     if (!credentials.email.trim()) {
-      setError("Enter your email address first, then choose Sign in with Passkey.");
+      setError(
+        "Enter your email address first, then choose Sign in with Passkey.",
+      );
       return;
     }
     setProviderLoading("passkey");
@@ -187,12 +204,18 @@ export default function Login({ adminMode = false }) {
       </aside>
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>{adminMode ? "Admin login" : "Welcome back"}</h1>
-        <p>{adminMode ? "Sign in to manage the catalog." : "Log in to continue shopping."}</p>
+        <p>
+          {adminMode
+            ? "Sign in to manage the catalog."
+            : "Log in to continue shopping."}
+        </p>
         {error && <div className="form-error">{error}</div>}
         <label>
           Email address
           <input
-            onChange={(event) => setCredentials({ ...credentials, email: event.target.value })}
+            onChange={(event) =>
+              setCredentials({ ...credentials, email: event.target.value })
+            }
             required
             type="email"
             value={credentials.email}
@@ -221,7 +244,13 @@ export default function Login({ adminMode = false }) {
               <GoogleOAuthProvider clientId={googleClientId}>
                 <GoogleAccessButton
                   disabled={providerLoading === "google"}
-                  onError={() => setError("Google login was cancelled or failed.")}
+                  onError={(googleError) =>
+                    setError(
+                      googleError?.error_description ||
+                        googleError?.error ||
+                        "Google login was cancelled or failed.",
+                    )
+                  }
                   onLogin={(accessToken) => {
                     setProviderLoading("google");
                     finishProviderLogin(() => googleLogin(accessToken));
@@ -253,7 +282,9 @@ export default function Login({ adminMode = false }) {
               <span className="provider-icon">
                 <FacebookIcon />
               </span>
-              {providerLoading === "facebook" ? "Connecting..." : "Continue with Facebook"}
+              {providerLoading === "facebook"
+                ? "Connecting..."
+                : "Continue with Facebook"}
             </button>
             <button
               className="provider-button passkey-provider"
@@ -264,14 +295,17 @@ export default function Login({ adminMode = false }) {
               <span className="provider-icon">
                 <PasskeyIcon />
               </span>
-              {providerLoading === "passkey" ? "Checking passkey..." : "Sign in with Passkey"}
+              {providerLoading === "passkey"
+                ? "Checking passkey..."
+                : "Sign in with Passkey"}
             </button>
           </div>
         )}
         <span>
           {adminMode ? (
             <>
-              Need admin access? <Link to="/admin/register">Create admin account</Link>
+              Need admin access?{" "}
+              <Link to="/admin/register">Create admin account</Link>
             </>
           ) : (
             <>
